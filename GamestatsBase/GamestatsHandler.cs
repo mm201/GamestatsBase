@@ -71,10 +71,15 @@ namespace GamestatsBase
                 return;
             }
 
+            String rawPath = context.Request.RawUrl;
+            int qmPos = rawPath.IndexOf('?');
+            if (qmPos >= 0)
+                rawPath = rawPath.Substring(0, qmPos);
+
             if (context.Request.QueryString.Count == 1)
             {
                 // this is a new session request
-                GamestatsSession session = CreateSession(pid, context.Request.PathInfo);
+                GamestatsSession session = CreateSession(pid, rawPath);
                 GamestatsSessionManager manager = GamestatsSessionManager.FromContext(context);
                 manager.Add(session);
 
@@ -171,7 +176,7 @@ namespace GamestatsBase
                 MemoryStream response = new MemoryStream();
                 try
                 {
-                    ProcessGamestatsRequest(dataTrim, response, context.Request.PathInfo, pid, context);
+                    ProcessGamestatsRequest(dataTrim, response, rawPath, pid, context);
                 }
                 catch (GamestatsException ex)
                 {
