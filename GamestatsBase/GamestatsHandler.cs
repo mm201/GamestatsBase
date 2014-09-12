@@ -177,7 +177,7 @@ namespace GamestatsBase
                 MemoryStream response = new MemoryStream();
                 try
                 {
-                    ProcessGamestatsRequest(dataTrim, response, rawPath, pid, context);
+                    ProcessGamestatsRequest(dataTrim, response, rawPath, pid, context, session);
                 }
                 catch (GamestatsException ex)
                 {
@@ -229,7 +229,7 @@ namespace GamestatsBase
             }
         }
 
-        public virtual void ProcessGamestatsRequest(byte[] request, MemoryStream response, String url, int pid, HttpContext context)
+        public virtual void ProcessGamestatsRequest(byte[] request, MemoryStream response, String url, int pid, HttpContext context, GamestatsSession session)
         {
 
         }
