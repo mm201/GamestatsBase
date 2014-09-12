@@ -121,18 +121,22 @@ namespace GamestatsBase
                     return;
                 }
 
+                GamestatsSession session = null;
+
                 GamestatsSessionManager manager = GamestatsSessionManager.FromContext(context);
-                if (!manager.Sessions.ContainsKey(form["hash"]))
+                if (manager.Sessions.ContainsKey(form["hash"]))
+                {
+                    session = manager.Sessions[form["hash"]];
+                    if (session.GameId != GameId)
+                    {
+                        // matched wrong game. Highly unlikely
+                        ShowError(context, 400);
+                        return;
+                    }
+                }
+                else if (context.Request.HttpMethod == "GET")
                 {
                     // session hash not matched
-                    ShowError(context, 400);
-                    return;
-                }
-
-                GamestatsSession session = manager.Sessions[form["hash"]];
-                if (session.GameId != GameId)
-                {
-                    // matched wrong game. Highly unlikely
                     ShowError(context, 400);
                     return;
                 }
