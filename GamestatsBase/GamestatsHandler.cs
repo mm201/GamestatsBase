@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -61,10 +62,19 @@ namespace GamestatsBase
 
         public void ProcessRequest(HttpContext context)
         {
-            int pid;
+            if (context.Request.HttpMethod != "POST" &&
+                context.Request.HttpMethod != "GET")
+            {
+                ShowError(context, 400);
+                return;
+            }
 
-            if (context.Request.QueryString["pid"] == null ||
-                !Int32.TryParse(context.Request.QueryString["pid"], out pid))
+            NameValueCollection form = context.Request.HttpMethod == "POST" ?
+                context.Request.Form : context.Request.QueryString;
+
+            int pid;
+            if (form["pid"] == null ||
+                !Int32.TryParse(form["pid"], out pid))
             {
                 // pid missing or bad format
                 ShowError(context, 400);
@@ -76,8 +86,8 @@ namespace GamestatsBase
             if (qmPos >= 0)
                 rawPath = rawPath.Substring(0, qmPos);
 
-            if (context.Request.QueryString["data"] == null &&
-                context.Request.QueryString["hash"] == null)
+            if (form["data"] == null &&
+                form["hash"] == null)
             {
                 // this is a new session request
                 GamestatsSession session = CreateSession(pid, rawPath);
@@ -87,12 +97,12 @@ namespace GamestatsBase
                 context.Response.Write(session.Token);
                 return;
             }
-            else if (context.Request.QueryString.Count >= 3)
+            else if (form.Count >= 3)
             {
                 // this is a main request
-                if (context.Request.QueryString["hash"] == null ||
-                    context.Request.QueryString["data"] == null ||
-                    context.Request.QueryString["data"].Length < 
+                if (form["hash"] == null ||
+                    form["data"] == null ||
+                    form["data"].Length < 
                     ((RequestVersion == GamestatsRequestVersions.Version1) ? 12 : 16))
                 {
                     // arguments missing, partial check for data length.
@@ -112,14 +122,14 @@ namespace GamestatsBase
                 }
 
                 GamestatsSessionManager manager = GamestatsSessionManager.FromContext(context);
-                if (!manager.Sessions.ContainsKey(context.Request.QueryString["hash"]))
+                if (!manager.Sessions.ContainsKey(form["hash"]))
                 {
                     // session hash not matched
                     ShowError(context, 400);
                     return;
                 }
 
-                GamestatsSession session = manager.Sessions[context.Request.QueryString["hash"]];
+                GamestatsSession session = manager.Sessions[form["hash"]];
                 if (session.GameId != GameId)
                 {
                     // matched wrong game. Highly unlikely
@@ -130,7 +140,7 @@ namespace GamestatsBase
                 byte[] data;
                 try
                 {
-                    data = DecryptData(context.Request.QueryString["data"]);
+                    data = DecryptData(form["data"]);
                     if (data.Length < ((RequestVersion == GamestatsRequestVersions.Version1) 
                         ? 4 : 8))
                     {
