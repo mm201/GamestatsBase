@@ -76,7 +76,8 @@ namespace GamestatsBase
             if (qmPos >= 0)
                 rawPath = rawPath.Substring(0, qmPos);
 
-            if (context.Request.QueryString.Count == 1)
+            if (context.Request.QueryString["data"] == null &&
+                context.Request.QueryString["hash"] == null)
             {
                 // this is a new session request
                 GamestatsSession session = CreateSession(pid, rawPath);
