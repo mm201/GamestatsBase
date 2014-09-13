@@ -60,6 +60,12 @@ namespace GamestatsBase
         public GamestatsRequestVersions RequestVersion { get; private set; }
         public GamestatsResponseVersions ResponseVersion { get; private set; }
 
+        public GamestatsSessionManager SessionManager
+        {
+            get;
+            protected set;
+        }
+
         public void ProcessRequest(HttpContext context)
         {
             if (context.Request.HttpMethod != "POST" &&
@@ -86,13 +92,14 @@ namespace GamestatsBase
             if (qmPos >= 0)
                 rawPath = rawPath.Substring(0, qmPos);
 
+            SessionManager = GamestatsSessionManager.FromContext(context);
+
             if (form["data"] == null &&
                 form["hash"] == null)
             {
                 // this is a new session request
                 GamestatsSession session = CreateSession(pid, rawPath);
-                GamestatsSessionManager manager = GamestatsSessionManager.FromContext(context);
-                manager.Add(session);
+                SessionManager.Add(session);
 
                 context.Response.Write(session.Token);
                 return;
@@ -123,10 +130,9 @@ namespace GamestatsBase
 
                 GamestatsSession session = null;
 
-                GamestatsSessionManager manager = GamestatsSessionManager.FromContext(context);
-                if (manager.Sessions.ContainsKey(form["hash"]))
+                if (SessionManager.Sessions.ContainsKey(form["hash"]))
                 {
-                    session = manager.Sessions[form["hash"]];
+                    session = SessionManager.Sessions[form["hash"]];
                     if (session.GameId != GameId)
                     {
                         // matched wrong game. Highly unlikely
@@ -224,12 +230,13 @@ namespace GamestatsBase
             }
         }
 
-        private void ShowError(HttpContext context, int responseCode)
+        // todo: keep the context on a field instead of passing it here
+        public void ShowError(HttpContext context, int responseCode)
         {
             ShowError(context, responseCode, GamestatsException.defaultMessage(responseCode));
         }
 
-        private void ShowError(HttpContext context, int responseCode, String message)
+        public void ShowError(HttpContext context, int responseCode, String message)
         {
             context.Response.StatusCode = responseCode;
             context.Response.Write(GamestatsException.defaultMessage(responseCode));
@@ -264,15 +271,14 @@ namespace GamestatsBase
         private byte[] DecryptData(String data)
         {
             byte[] data2 = FromUrlSafeBase64String(data);
-            if (data2.Length < 4) throw new FormatException("Data must contain at least 4 bytes.");
-
             if (RequestVersion == GamestatsRequestVersions.Version1) return data2;
+            if (data2.Length < 4) throw new FormatException("Data must contain at least 4 bytes.");
 
             byte[] data3 = new byte[data2.Length - 4];
             int checksum = BitConverter.ToInt32(data2, 0);
             checksum = IPAddress.NetworkToHostOrder(checksum); // endian flip
             checksum ^= (int)HashMask;
-            uint rand = (uint)(checksum | (checksum << 16));
+            int rand = checksum | (checksum << 16);
 
             for (int pos = 0; pos < data3.Length; pos++)
             {
@@ -289,12 +295,12 @@ namespace GamestatsBase
             return data3;
         }
 
-        private static uint DecryptRNG(uint prev, uint mul, uint add, uint mask)
+        private static int DecryptRNG(int prev, uint mul, uint add, uint mask)
         {
-            return (prev * mul + add) & ~mask;
+            return (prev * (int)mul + (int)add) & ~(int)mask;
         }
 
-        private uint DecryptRNG(uint prev)
+        private int DecryptRNG(int prev)
         {
             return DecryptRNG(prev, RngMul, RngAdd, RngMask);
         }
