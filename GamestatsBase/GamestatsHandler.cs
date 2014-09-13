@@ -103,15 +103,15 @@ namespace GamestatsBase
                 if (form["hash"] == null ||
                     form["data"] == null ||
                     form["data"].Length < 
-                    ((RequestVersion == GamestatsRequestVersions.Version1) ? 12 : 16))
+                    ((RequestVersion != GamestatsRequestVersions.Version3) ? 12 : 16))
                 {
                     // arguments missing, partial check for data length.
 
-                    // In version 1, we require data to hold at least 7 bytes
+                    // In version 1-2, we require data to hold at least 7 bytes
                     // in this check. In reality, it must hold at least 8,
                     // which is checked for below after decoding
 
-                    // In version 2, we require data to hold at least 10 bytes
+                    // In version 3, we require data to hold at least 10 bytes
                     // in this check, but it actually needs to hold 12.
 
                     // We do incomplete checks so we can fail as early as
@@ -145,7 +145,7 @@ namespace GamestatsBase
                 try
                 {
                     data = DecryptData(form["data"]);
-                    if (data.Length < ((RequestVersion == GamestatsRequestVersions.Version1) 
+                    if (data.Length < ((RequestVersion != GamestatsRequestVersions.Version3) 
                         ? 4 : 8))
                     {
                         // data too short to contain a pid
@@ -173,7 +173,7 @@ namespace GamestatsBase
                     return;
                 }
 
-                if (RequestVersion != GamestatsRequestVersions.Version1)
+                if (RequestVersion == GamestatsRequestVersions.Version3)
                 {
                     int length = BitConverter.ToInt32(data, 4);
                     if (length + 8 != data.Length)
@@ -184,7 +184,7 @@ namespace GamestatsBase
                     }
                 }
 
-                int trimLength = (RequestVersion == GamestatsRequestVersions.Version1) ? 4 : 8;
+                int trimLength = (RequestVersion != GamestatsRequestVersions.Version3) ? 4 : 8;
                 byte[] dataTrim = new byte[data.Length - trimLength];
                 Array.Copy(data, trimLength, dataTrim, 0, data.Length - trimLength);
 
@@ -266,6 +266,8 @@ namespace GamestatsBase
             byte[] data2 = FromUrlSafeBase64String(data);
             if (data2.Length < 4) throw new FormatException("Data must contain at least 4 bytes.");
 
+            if (RequestVersion == GamestatsRequestVersions.Version1) return data2;
+
             byte[] data3 = new byte[data2.Length - 4];
             int checksum = BitConverter.ToInt32(data2, 0);
             checksum = IPAddress.NetworkToHostOrder(checksum); // endian flip
@@ -327,14 +329,36 @@ namespace GamestatsBase
 
     public enum GamestatsRequestVersions
     {
+        /// <summary>
+        /// Version 1 has very little validation. Request data doesn't contain
+        /// any of the headers found in later versions and is unencrypted.
+        /// </summary>
         Version1,
-        Version2
+        /// <summary>
+        /// Data contains an obfuscated checksum and pid, and supports
+        /// enryption.
+        /// </summary>
+        Version2,
+        /// <summary>
+        /// Data contains an obfuscated checksum, pid, and payload length, and
+        /// supports encryption.
+        /// </summary>
+        Version3
     }
 
     public enum GamestatsResponseVersions
     {
+        /// <summary>
+        /// Response is plain raw binary data.
+        /// </summary>
         Version1,
+        /// <summary>
+        /// Response contains a salted hash at the end, encoded in hex.
+        /// </summary>
         Version2,
+        /// <summary>
+        /// Response contains the word "done" followed by the salted hash.
+        /// </summary>
         Version3
     }
 
