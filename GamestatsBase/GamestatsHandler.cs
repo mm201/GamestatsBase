@@ -147,7 +147,7 @@ namespace GamestatsBase
                     return;
                 }
 
-                byte[] data;
+                byte[] data = null;
                 try
                 {
                     data = DecryptData(form["data"]);
@@ -165,6 +165,11 @@ namespace GamestatsBase
                 }
                 catch (FormatException)
                 {
+                    // fixme: Animal Crossing DS uses invalid base64 strings.
+                    // It actually expects raw ASCII... >_________<
+                    // We need to skip this check completely if RequestVersion
+                    // is 1.
+
                     // data too short to contain a checksum,
                     // base64 format errors
                     ShowError(context, 400);
