@@ -141,8 +141,8 @@ namespace GamestatsBase
 
             byte[] data = new byte[longToken.Length];
             MemoryStream stream = new MemoryStream(data);
-            StreamWriter writer = new StreamWriter(stream);
-            writer.Write(longToken); // fixme: this throws an OutOfBoundsException if the passed token contains non-ascii.
+            StreamWriter writer = new StreamWriter(stream, Encoding.ASCII);
+            writer.Write(longToken);
             writer.Flush();
 
             return m_sha1.ComputeHash(data).ToHexStringLower();
