@@ -19,8 +19,10 @@ namespace Sample.tetrisds
         public override void ProcessGamestatsRequest(byte[] request, System.IO.MemoryStream response, string url, int pid, HttpContext context, GamestatsSession session)
         {
             byte[] nameBytes = FromUrlSafeBase64String(context.Request.QueryString["name"]);
+            char[] nameChars = new char[nameBytes.Length >> 1];
 
-
+            Buffer.BlockCopy(nameBytes, 0, nameChars, 0, nameBytes.Length);
+            String name = new String(nameChars);
         }
     }
 }
