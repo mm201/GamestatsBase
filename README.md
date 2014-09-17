@@ -15,12 +15,18 @@ project. I can be contacted at #altwfc in Rizon.
 ##Usage
 
 In general, you'll want to perform URL rewriting in your global.asax handler to
-forward requests to the .ashx file where you implement your gamestats logic. In
-the .ashx handler, instead of inheriting IHttpHandler, you will inherit from
-GamestatsBase.GamestatsHandler and add a constructor where you provide the
-game-specific secret constants. (These constants will be contained within the
-game binary and helping you find them is outside the scope of this project.)
+forward the game's .asp requests to the .ashx file where you implement your
+gamestats logic. In the .ashx handler, instead of implementing IHttpHandler,
+you will inherit from GamestatsBase.GamestatsHandler and add a constructor
+where you provide the game-specific secret constants. (These constants will be
+contained within the game binary and helping you find them is outside the scope
+of this project.)
 
 Please see the included (albeit incomplete) Tetris DS example and the more
 robust [Pokémon Foundations](https://github.com/mm201/pkmnFoundations) project
 for examples of this library in use.
+
+##Note
+
+This is still a work in progress and I make no promises that there won't be
+breaking changes in the future.
