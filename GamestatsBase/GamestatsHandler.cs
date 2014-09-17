@@ -195,6 +195,8 @@ namespace GamestatsBase
                     }
                 }
 
+                // todo: we can save another copy by doing this trimming in
+                // DecryptData.
                 int trimLength = (RequestVersion != GamestatsRequestVersions.Version3) ? 4 : 8;
                 byte[] dataTrim = new byte[data.Length - trimLength];
                 Array.Copy(data, trimLength, dataTrim, 0, data.Length - trimLength);
