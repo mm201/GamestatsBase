@@ -41,8 +41,8 @@ namespace Sample
                 query = url.Substring(q + 1);
             }
 
-            // Since our handler is not ASP classic, we must rewrite .asp in
-            // the URL so control will be transferred to it.
+            // Since our handler is ashx, not ASP classic, we need to rewrite
+            // the .asp file extension so it will execute.
             if (path.Length < 4) return null;
             if (path.Substring(path.Length - 4).ToLowerInvariant() != ".asp") return null;
             return path.Substring(0, path.Length - 4) + ".ashx";
