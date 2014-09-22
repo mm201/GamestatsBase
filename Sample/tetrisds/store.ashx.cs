@@ -23,6 +23,9 @@ namespace Sample.tetrisds
 
             Buffer.BlockCopy(nameBytes, 0, nameChars, 0, nameBytes.Length);
             String name = new String(nameChars);
+
+            // Since the correct response is actually blank, we don't need to
+            // write anything to it here.
         }
     }
 }
