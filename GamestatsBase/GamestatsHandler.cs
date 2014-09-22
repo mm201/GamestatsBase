@@ -224,8 +224,6 @@ namespace GamestatsBase
 
                 context.Response.OutputStream.Write(responseArray, 0, responseArray.Length);
 
-                if (ResponseVersion == GamestatsResponseVersions.Version3)
-                    context.Response.Write("done");
                 if (ResponseVersion != GamestatsResponseVersions.Version1)
                     context.Response.Write(ResponseChecksum(responseArray));
             }
@@ -368,11 +366,7 @@ namespace GamestatsBase
         /// <summary>
         /// Response contains a salted hash at the end, encoded in hex.
         /// </summary>
-        Version2,
-        /// <summary>
-        /// Response contains the word "done" followed by the salted hash.
-        /// </summary>
-        Version3
+        Version2
     }
 
     public class GamestatsException : ApplicationException
