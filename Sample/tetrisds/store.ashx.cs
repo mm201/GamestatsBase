@@ -11,7 +11,7 @@ namespace Sample.tetrisds
     /// </summary>
     public class store : GamestatsHandler
     {
-        public store() : base("Wo3vqrDoL56sAdveYeC1", 0x00000000u, 0x00000000u, 0x00000000u, 0x00000000u, "tetrisds", GamestatsRequestVersions.Version1, GamestatsResponseVersions.Version1)
+        public store() : base("Wo3vqrDoL56sAdveYeC1", 0, 0, 0, 0, "tetrisds", GamestatsRequestVersions.Version1, GamestatsResponseVersions.Version1)
         {
 
         }
@@ -23,6 +23,11 @@ namespace Sample.tetrisds
 
             Buffer.BlockCopy(nameBytes, 0, nameChars, 0, nameBytes.Length);
             String name = new String(nameChars);
+
+            String region = context.Request.QueryString["region"];
+
+            // todo: Figure out what the data contains and how to parse it, so
+            // we can have a leaderboard.
 
             // Since the correct response is actually blank, we don't need to
             // write anything to it here.
