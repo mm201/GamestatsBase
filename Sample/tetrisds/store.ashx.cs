@@ -29,6 +29,9 @@ namespace Sample.tetrisds
             // todo: Figure out what the data contains and how to parse it, so
             // we can have a leaderboard.
 
+            // todo: Write name, pid, region, and the mysteries contained
+            // within the data blob to a database.
+
             // Since the correct response is actually blank, we don't need to
             // write anything to it here.
         }
