@@ -17,6 +17,9 @@ namespace Sample
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+#if !DEBUG
+            return;
+#endif
             GamestatsSessionManager gsm = GamestatsSessionManager.FromContext(Context);
             StringBuilder builder = new StringBuilder();
             builder.Append("Active sessions (");
