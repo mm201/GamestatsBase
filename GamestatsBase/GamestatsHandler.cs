@@ -18,8 +18,8 @@ namespace GamestatsBase
 {
     public class GamestatsHandler : IHttpHandler, IRequiresSessionState
     {
-        public GamestatsHandler(String initString, GamestatsRequestVersions reqVersion, 
-            GamestatsResponseVersions respVersion)
+        public GamestatsHandler(String initString, GamestatsRequestVersions reqVersion,
+            GamestatsResponseVersions respVersion, bool encryptedRequest = true)
         {
             if (initString.Length < 44) throw new FormatException();
 
@@ -30,19 +30,21 @@ namespace GamestatsBase
             uint hashMask = UInt32.Parse(initString.Substring(44, 8), NumberStyles.AllowHexSpecifier);
             String gameId = initString.Substring(52);
 
-            Initialize(salt, rngMul, rngAdd, rngMask, hashMask, gameId, reqVersion, respVersion);
+            Initialize(salt, rngMul, rngAdd, rngMask, hashMask, gameId, reqVersion, respVersion, encryptedRequest);
         }
 
         public GamestatsHandler(String salt, uint rngMul, uint rngAdd, uint rngMask, 
             uint hashMask,
-            String gameId, GamestatsRequestVersions reqVersion, GamestatsResponseVersions respVersion)
+            String gameId, GamestatsRequestVersions reqVersion, GamestatsResponseVersions respVersion,
+            bool encryptedRequest = true)
         {
-            Initialize(salt, rngMul, rngAdd, rngMask, hashMask, gameId, reqVersion, respVersion);
+            Initialize(salt, rngMul, rngAdd, rngMask, hashMask, gameId, reqVersion, respVersion, encryptedRequest);
         }
 
         private void Initialize(String salt, uint rngMul, uint rngAdd, uint rngMask, 
             uint hashMask,
-            String gameId, GamestatsRequestVersions reqVersion, GamestatsResponseVersions respVersion)
+            String gameId, GamestatsRequestVersions reqVersion, GamestatsResponseVersions respVersion,
+            bool encryptedRequest)
         {
             if (salt.Length != 20) throw new FormatException();
             Salt = salt;
@@ -53,16 +55,18 @@ namespace GamestatsBase
             GameId = gameId;
             RequestVersion = reqVersion;
             ResponseVersion = respVersion;
+            EncryptedRequest = encryptedRequest;
         }
 
-        public String Salt { get; private set; }
-        public uint RngMul { get; private set; }
-        public uint RngAdd { get; private set; }
-        public uint RngMask { get; private set; }
-        public uint HashMask { get; private set; }
-        public String GameId { get; private set; }
-        public GamestatsRequestVersions RequestVersion { get; private set; }
-        public GamestatsResponseVersions ResponseVersion { get; private set; }
+        public String Salt { get; protected set; }
+        public uint RngMul { get; protected set; }
+        public uint RngAdd { get; protected set; }
+        public uint RngMask { get; protected set; }
+        public uint HashMask { get; protected set; }
+        public String GameId { get; protected set; }
+        public GamestatsRequestVersions RequestVersion { get; protected set; }
+        public GamestatsResponseVersions ResponseVersion { get; protected set; }
+        public bool EncryptedRequest { get; protected set; }
 
         public GamestatsSessionManager SessionManager
         {
@@ -273,7 +277,7 @@ namespace GamestatsBase
         }
 
         /// <summary>
-        /// Decrypts the NDS &data= querystring into readable binary data.
+        /// Decrypts the NDS &amp;data= querystring into readable binary data.
         /// The PID (little endian) is left at the start of the output
         /// but the (unencrypted) checksum is removed.
         /// </summary>
@@ -283,16 +287,17 @@ namespace GamestatsBase
             if (RequestVersion == GamestatsRequestVersions.Version1) return data2;
             if (data2.Length < 4) throw new FormatException("Data must contain at least 4 bytes.");
 
-            byte[] data3 = new byte[data2.Length - 4];
             int checksum = BitConverter.ToInt32(data2, 0);
             checksum = IPAddress.NetworkToHostOrder(checksum); // endian flip
             checksum ^= (int)HashMask;
-            int rand = checksum | (checksum << 16);
 
-            for (int pos = 0; pos < data3.Length; pos++)
+            byte[] data3;
+            if (EncryptedRequest)
+                data3 = DecryptMain(data2, checksum | (checksum << 16));
+            else
             {
-                rand = DecryptRNG(rand);
-                data3[pos] = (byte)(data2[pos + 4] ^ (byte)(rand >> 16));
+                data3 = new byte[data2.Length - 4];
+                Array.Copy(data2, 4, data3, 0, data2.Length - 4);
             }
 
             int checkedsum = 0;
@@ -301,6 +306,18 @@ namespace GamestatsBase
 
             if (checkedsum != checksum) throw new FormatException("Data checksum is incorrect.");
 
+            return data3;
+        }
+
+        private byte[] DecryptMain(byte[] data2, int rand)
+        {
+            byte[] data3 = new byte[data2.Length - 4];
+
+            for (int pos = 0; pos < data3.Length; pos++)
+            {
+                rand = DecryptRNG(rand);
+                data3[pos] = (byte)(data2[pos + 4] ^ (byte)(rand >> 16));
+            }
             return data3;
         }
 
@@ -351,7 +368,7 @@ namespace GamestatsBase
         Version1,
         /// <summary>
         /// Data contains an obfuscated checksum and pid, and supports
-        /// enryption.
+        /// encryption.
         /// </summary>
         Version2,
         /// <summary>
@@ -368,7 +385,7 @@ namespace GamestatsBase
         /// </summary>
         Version1,
         /// <summary>
-        /// Response contains a salted hash at the end, encoded in hex.
+        /// Response contains a salted hash at the end, in hex coded ASCII.
         /// </summary>
         Version2
     }
