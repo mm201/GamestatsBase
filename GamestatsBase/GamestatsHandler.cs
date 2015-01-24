@@ -281,7 +281,7 @@ namespace GamestatsBase
         /// The PID (little endian) is left at the start of the output
         /// but the (unencrypted) checksum is removed.
         /// </summary>
-        private byte[] DecryptData(String data)
+        public byte[] DecryptData(String data)
         {
             byte[] data2 = FromUrlSafeBase64String(data);
             if (RequestVersion == GamestatsRequestVersions.Version1) return data2;
