@@ -15,11 +15,15 @@ namespace GamestatsBase
         public readonly Dictionary<String, GamestatsSession> Sessions 
             = new Dictionary<String, GamestatsSession>();
 
-        public GamestatsSessionManager()
+        public GamestatsSessionManager(HttpApplication application)
         {
+            m_application = application;
+            m_application.EndRequest += Application_EndRequest;
         }
 
-        private void PruneSessions()
+        private HttpApplication m_application;
+
+        public void PruneSessions()
         {
             Dictionary<String, GamestatsSession> sessions = Sessions;
             DateTime now = DateTime.UtcNow;
@@ -36,6 +40,12 @@ namespace GamestatsBase
                     sessions.Remove(toRemove.Dequeue());
                 }
             }
+        }
+
+        private void Application_EndRequest(object sender, EventArgs e)
+        {
+            // todo: run this less often. Should be a background task like GC
+            PruneSessions();
         }
 
         public void Add(GamestatsSession session)
@@ -58,13 +68,20 @@ namespace GamestatsBase
 
             if (manager == null)
             {
-                manager = new GamestatsSessionManager();
+                manager = new GamestatsSessionManager(context.ApplicationInstance);
                 context.Application.Add("GamestatsSessionManager", manager);
             }
 
             return manager;
         }
 
+        /// <summary>
+        /// Finds a session matching a player ID and URL. You may need this if
+        /// the game begins a second session but needs info from the first.
+        /// </summary>
+        /// <param name="pid">Gamespy player ID</param>
+        /// <param name="url">URL where the desired session began</param>
+        /// <returns>The found session or null if none was found</returns>
         public GamestatsSession FindSession(int pid, String url)
         {
             // todo: keep a hash table of pids that maps them onto session objects
@@ -84,7 +101,5 @@ namespace GamestatsBase
             }
             return result;
         }
-
-        
     }
 }
