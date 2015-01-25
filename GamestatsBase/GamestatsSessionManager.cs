@@ -5,8 +5,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Web;
+using System.Web.Caching;
 
 namespace GamestatsBase
 {
@@ -18,7 +20,6 @@ namespace GamestatsBase
         public GamestatsSessionManager(HttpApplication application)
         {
             m_application = application;
-            m_application.EndRequest += Application_EndRequest;
         }
 
         private HttpApplication m_application;
@@ -40,12 +41,6 @@ namespace GamestatsBase
                     sessions.Remove(toRemove.Dequeue());
                 }
             }
-        }
-
-        private void Application_EndRequest(object sender, EventArgs e)
-        {
-            // todo: run this less often. Should be a background task like GC
-            PruneSessions();
         }
 
         public void Add(GamestatsSession session)

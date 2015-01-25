@@ -8,6 +8,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Security;
 using System.Web.SessionState;
+using GamestatsBase;
 
 namespace Sample
 {
@@ -26,6 +27,15 @@ namespace Sample
             {
                 Context.RewritePath(targetUrl, pathInfo, query, false);
             }
+        }
+
+        void Application_EndRequest(object sender, EventArgs e)
+        {
+            // todo: find a way to make session expiry happen entirely in the
+            // GamestatsBase library.
+            // Currently, I run into a problem binding the EndRequest event:
+            // http://stackoverflow.com/questions/2781346/why-can-event-handlers-only-be-bound-to-httpapplication-events-during-ihttpmodul
+            GamestatsSessionManager.FromContext(Context).PruneSessions();
         }
 
         public static String RewriteUrl(String url, out String pathInfo, out String query)
