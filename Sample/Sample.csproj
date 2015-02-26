@@ -59,6 +59,8 @@
   <ItemGroup>
     <Content Include="Sessions.aspx" />
     <Content Include="tetrisds\store.ashx" />
+    <Content Include="dummy.ashx" />
+    <None Include="Properties\PublishProfiles\pkmnclassic.net.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -71,6 +73,9 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="dummy.ashx.cs">
+      <DependentUpon>dummy.ashx</DependentUpon>
+    </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
