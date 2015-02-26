@@ -19,7 +19,8 @@ namespace GamestatsBase
     public class GamestatsHandler : IHttpHandler, IRequiresSessionState
     {
         public GamestatsHandler(String initString, GamestatsRequestVersions reqVersion,
-            GamestatsResponseVersions respVersion, bool encryptedRequest = true)
+            GamestatsResponseVersions respVersion, bool encryptedRequest = true,
+            bool requireSession = true)
         {
             if (initString.Length < 44) throw new FormatException();
 
@@ -30,21 +31,21 @@ namespace GamestatsBase
             uint hashMask = UInt32.Parse(initString.Substring(44, 8), NumberStyles.AllowHexSpecifier);
             String gameId = initString.Substring(52);
 
-            Initialize(salt, rngMul, rngAdd, rngMask, hashMask, gameId, reqVersion, respVersion, encryptedRequest);
+            Initialize(salt, rngMul, rngAdd, rngMask, hashMask, gameId, reqVersion, respVersion, encryptedRequest, requireSession);
         }
 
         public GamestatsHandler(String salt, uint rngMul, uint rngAdd, uint rngMask, 
             uint hashMask,
             String gameId, GamestatsRequestVersions reqVersion, GamestatsResponseVersions respVersion,
-            bool encryptedRequest = true)
+            bool encryptedRequest = true, bool requireSession = true)
         {
-            Initialize(salt, rngMul, rngAdd, rngMask, hashMask, gameId, reqVersion, respVersion, encryptedRequest);
+            Initialize(salt, rngMul, rngAdd, rngMask, hashMask, gameId, reqVersion, respVersion, encryptedRequest, requireSession);
         }
 
         private void Initialize(String salt, uint rngMul, uint rngAdd, uint rngMask, 
             uint hashMask,
             String gameId, GamestatsRequestVersions reqVersion, GamestatsResponseVersions respVersion,
-            bool encryptedRequest)
+            bool encryptedRequest, bool requireSession)
         {
             if (salt.Length != 20) throw new FormatException();
             Salt = salt;
@@ -56,6 +57,7 @@ namespace GamestatsBase
             RequestVersion = reqVersion;
             ResponseVersion = respVersion;
             EncryptedRequest = encryptedRequest;
+            RequireSession = requireSession;
         }
 
         public String Salt { get; protected set; }
@@ -67,6 +69,7 @@ namespace GamestatsBase
         public GamestatsRequestVersions RequestVersion { get; protected set; }
         public GamestatsResponseVersions ResponseVersion { get; protected set; }
         public bool EncryptedRequest { get; protected set; }
+        public bool RequireSession { get; protected set; }
 
         public GamestatsSessionManager SessionManager
         {
@@ -115,7 +118,7 @@ namespace GamestatsBase
             else if (form.Count >= 3)
             {
                 // this is a main request
-                if (form["hash"] == null ||
+                if ((form["hash"] == null && RequireSession) ||
                     form["data"] == null ||
                     form["data"].Length < 
                     ((RequestVersion != GamestatsRequestVersions.Version3) ? 12 : 16))
@@ -138,7 +141,7 @@ namespace GamestatsBase
 
                 GamestatsSession session = null;
 
-                if (SessionManager.Sessions.ContainsKey(form["hash"]))
+                if (form["hash"] != null && SessionManager.Sessions.ContainsKey(form["hash"]))
                 {
                     session = SessionManager.Sessions[form["hash"]];
                     if (session.GameId != GameId)
@@ -148,7 +151,7 @@ namespace GamestatsBase
                         return;
                     }
                 }
-                else if (context.Request.HttpMethod == "GET")
+                else if (RequireSession)
                 {
                     // session hash not matched
                     ShowError(context, 400);

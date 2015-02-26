@@ -16,7 +16,7 @@ namespace Sample.tetrisds
     public class store : GamestatsHandler
     {
         public store() : base("Wo3vqrDoL56sAdveYeC1", 0, 0, 0, 0, "tetrisds", 
-            GamestatsRequestVersions.Version1, GamestatsResponseVersions.Version1, false)
+            GamestatsRequestVersions.Version1, GamestatsResponseVersions.Version1, false, true)
         {
 
         }

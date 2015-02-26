@@ -13,7 +13,7 @@ namespace Sample
     {
         public dummy()
             : base("00000000000000000000", 0, 0, 0, 0, "dummy",
-                GamestatsRequestVersions.Version1, GamestatsResponseVersions.Version1, false)
+                GamestatsRequestVersions.Version1, GamestatsResponseVersions.Version1, false, false)
         {
 
         }
