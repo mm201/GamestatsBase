@@ -222,9 +222,13 @@ namespace GamestatsBase
                     ShowError(context, ex.ResponseCode, ex.Message);
                     return;
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+#if DEBUG
+                    ShowError(context, 500, ex.ToString());
+#else
                     ShowError(context, 500);
+#endif
                     return;
                 }
 
