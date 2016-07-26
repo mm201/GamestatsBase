@@ -18,33 +18,33 @@ namespace GamestatsBase
 {
     public class GamestatsHandler : IHttpHandler, IRequiresSessionState
     {
-        public GamestatsHandler(String initString, GamestatsRequestVersions reqVersion,
+        public GamestatsHandler(string initString, GamestatsRequestVersions reqVersion,
             GamestatsResponseVersions respVersion, bool encryptedRequest = true,
             bool requireSession = true)
         {
             if (initString.Length < 44) throw new FormatException();
 
-            String salt = initString.Substring(0, 20);
+            string salt = initString.Substring(0, 20);
             uint rngMul = UInt32.Parse(initString.Substring(20, 8), NumberStyles.AllowHexSpecifier);
             uint rngAdd = UInt32.Parse(initString.Substring(28, 8), NumberStyles.AllowHexSpecifier);
             uint rngMask = UInt32.Parse(initString.Substring(36, 8), NumberStyles.AllowHexSpecifier);
             uint hashMask = UInt32.Parse(initString.Substring(44, 8), NumberStyles.AllowHexSpecifier);
-            String gameId = initString.Substring(52);
+            string gameId = initString.Substring(52);
 
             Initialize(salt, rngMul, rngAdd, rngMask, hashMask, gameId, reqVersion, respVersion, encryptedRequest, requireSession);
         }
 
-        public GamestatsHandler(String salt, uint rngMul, uint rngAdd, uint rngMask, 
+        public GamestatsHandler(string salt, uint rngMul, uint rngAdd, uint rngMask, 
             uint hashMask,
-            String gameId, GamestatsRequestVersions reqVersion, GamestatsResponseVersions respVersion,
+            string gameId, GamestatsRequestVersions reqVersion, GamestatsResponseVersions respVersion,
             bool encryptedRequest = true, bool requireSession = true)
         {
             Initialize(salt, rngMul, rngAdd, rngMask, hashMask, gameId, reqVersion, respVersion, encryptedRequest, requireSession);
         }
 
-        private void Initialize(String salt, uint rngMul, uint rngAdd, uint rngMask, 
+        private void Initialize(string salt, uint rngMul, uint rngAdd, uint rngMask, 
             uint hashMask,
-            String gameId, GamestatsRequestVersions reqVersion, GamestatsResponseVersions respVersion,
+            string gameId, GamestatsRequestVersions reqVersion, GamestatsResponseVersions respVersion,
             bool encryptedRequest, bool requireSession)
         {
             if (salt.Length != 20) throw new FormatException();
@@ -60,12 +60,12 @@ namespace GamestatsBase
             RequireSession = requireSession;
         }
 
-        public String Salt { get; protected set; }
+        public string Salt { get; protected set; }
         public uint RngMul { get; protected set; }
         public uint RngAdd { get; protected set; }
         public uint RngMask { get; protected set; }
         public uint HashMask { get; protected set; }
-        public String GameId { get; protected set; }
+        public string GameId { get; protected set; }
         public GamestatsRequestVersions RequestVersion { get; protected set; }
         public GamestatsResponseVersions ResponseVersion { get; protected set; }
         public bool EncryptedRequest { get; protected set; }
@@ -98,7 +98,7 @@ namespace GamestatsBase
                 return;
             }
 
-            String rawPath = context.Request.RawUrl;
+            string rawPath = context.Request.RawUrl;
             int qmPos = rawPath.IndexOf('?');
             if (qmPos >= 0)
                 rawPath = rawPath.Substring(0, qmPos);
@@ -256,7 +256,7 @@ namespace GamestatsBase
             ShowError(context, responseCode, GamestatsException.defaultMessage(responseCode));
         }
 
-        public void ShowError(HttpContext context, int responseCode, String message)
+        public void ShowError(HttpContext context, int responseCode, string message)
         {
             context.Response.StatusCode = responseCode;
             context.Response.Write(GamestatsException.defaultMessage(responseCode));
@@ -270,7 +270,7 @@ namespace GamestatsBase
             }
         }
 
-        public virtual void ProcessGamestatsRequest(byte[] request, MemoryStream response, String url, int pid, HttpContext context, GamestatsSession session)
+        public virtual void ProcessGamestatsRequest(byte[] request, MemoryStream response, string url, int pid, HttpContext context, GamestatsSession session)
         {
 
         }
@@ -278,7 +278,7 @@ namespace GamestatsBase
         /// <summary>
         /// Session factory if you need it. You probably don't.
         /// </summary>
-        public virtual GamestatsSession CreateSession(int pid, String url)
+        public virtual GamestatsSession CreateSession(int pid, string url)
         {
             return new GamestatsSession(GameId, Salt, pid, url);
         }
@@ -288,7 +288,7 @@ namespace GamestatsBase
         /// The PID (little endian) is left at the start of the output
         /// but the (unencrypted) checksum is removed.
         /// </summary>
-        public byte[] DecryptData(String data)
+        public byte[] DecryptData(string data)
         {
             byte[] data2 = FromUrlSafeBase64String(data);
             if (RequestVersion == GamestatsRequestVersions.Version1) return data2;
@@ -338,23 +338,23 @@ namespace GamestatsBase
             return DecryptRNG(prev, RngMul, RngAdd, RngMask);
         }
 
-        public static byte[] FromUrlSafeBase64String(String data)
+        public static byte[] FromUrlSafeBase64String(string data)
         {
             return Convert.FromBase64String(data.Replace('-', '+').Replace('_', '/'));
         }
 
-        public static String ToUrlSafeBase64String(byte[] data)
+        public static string ToUrlSafeBase64String(byte[] data)
         {
             return Convert.ToBase64String(data).Replace('+', '-').Replace('/', '_');
         }
 
         private static SHA1 m_sha1;
 
-        private String ResponseChecksum(byte[] responseArray)
+        private string ResponseChecksum(byte[] responseArray)
         {
             if (m_sha1 == null) m_sha1 = SHA1.Create();
 
-            String toCheck = Salt + ToUrlSafeBase64String(responseArray) + Salt;
+            string toCheck = Salt + ToUrlSafeBase64String(responseArray) + Salt;
 
             byte[] data = new byte[toCheck.Length];
             MemoryStream stream = new MemoryStream(data);
@@ -411,19 +411,19 @@ namespace GamestatsBase
             ResponseCode = responseCode;
         }
 
-        public GamestatsException(int responseCode, String message)
+        public GamestatsException(int responseCode, string message)
             : base(message)
         {
             ResponseCode = responseCode;
         }
 
-        public GamestatsException(int responseCode, String message, Exception innerException)
+        public GamestatsException(int responseCode, string message, Exception innerException)
             : base(message, innerException)
         {
             ResponseCode = responseCode;
         }
 
-        public static String defaultMessage(int responseCode)
+        public static string defaultMessage(int responseCode)
         {
             switch (responseCode)
             {

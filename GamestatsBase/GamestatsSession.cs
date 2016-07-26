@@ -17,12 +17,12 @@ namespace GamestatsBase
         protected static SHA1 m_sha1;
 
         private int m_pid;
-        private String m_url;
-        private String m_token;
-        private String m_hash;
+        private string m_url;
+        private string m_token;
+        private string m_hash;
         private DateTime m_expiry_date;
 
-        public GamestatsSession(String gameId, String salt, int pid, String url)
+        public GamestatsSession(string gameId, string salt, int pid, string url)
         {
             PID = pid;
             URL = url;
@@ -50,7 +50,7 @@ namespace GamestatsBase
         /// <summary>
         /// The URL in which this session began
         /// </summary>
-        public String URL
+        public string URL
         {
             get
             {
@@ -66,7 +66,7 @@ namespace GamestatsBase
         /// 32 chars of random data which both functions as a challenge
         /// and as a session ID
         /// </summary>
-        public String Token
+        public string Token
         {
             get
             {
@@ -78,7 +78,7 @@ namespace GamestatsBase
             }
         }
 
-        public String Hash
+        public string Hash
         {
             get
             {
@@ -102,7 +102,7 @@ namespace GamestatsBase
             }
         }
 
-        public String GameId
+        public string GameId
         {
             get;
             protected set;
@@ -114,7 +114,7 @@ namespace GamestatsBase
             set;
         }
 
-        public static String CreateToken()
+        public static string CreateToken()
         {
             if (m_rng == null) m_rng = new RNGCryptoServiceProvider();
 
@@ -134,14 +134,14 @@ namespace GamestatsBase
                 else
                     token[x] = (char)('=' + rand); // 'a' + rand - 36
             }
-            return new String(token);
+            return new string(token);
         }
 
-        public static String CreateHash(String token, String salt)
+        public static string CreateHash(string token, string salt)
         {
             if (m_sha1 == null) m_sha1 = SHA1.Create();
 
-            String longToken = salt + token;
+            string longToken = salt + token;
 
             byte[] data = new byte[longToken.Length];
             MemoryStream stream = new MemoryStream(data);

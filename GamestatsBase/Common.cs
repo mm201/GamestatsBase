@@ -40,7 +40,7 @@ namespace GamestatsBase
             return new string(c);
         }
 
-        public static byte[] FromHexString(String hex)
+        public static byte[] FromHexString(string hex)
         {
             // very suboptimal but error tolerant
             byte output = 0;

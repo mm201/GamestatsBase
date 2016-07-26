@@ -14,8 +14,8 @@ namespace GamestatsBase
 {
     public class GamestatsSessionManager
     {
-        public readonly Dictionary<String, GamestatsSession> Sessions 
-            = new Dictionary<String, GamestatsSession>();
+        public readonly Dictionary<string, GamestatsSession> Sessions 
+            = new Dictionary<string, GamestatsSession>();
 
         public GamestatsSessionManager(HttpApplication application)
         {
@@ -26,13 +26,13 @@ namespace GamestatsBase
 
         public void PruneSessions()
         {
-            Dictionary<String, GamestatsSession> sessions = Sessions;
+            Dictionary<string, GamestatsSession> sessions = Sessions;
             DateTime now = DateTime.UtcNow;
 
             lock (sessions)
             {
-                Queue<String> toRemove = new Queue<String>();
-                foreach (KeyValuePair<String, GamestatsSession> session in sessions)
+                Queue<string> toRemove = new Queue<string>();
+                foreach (var session in sessions)
                 {
                     if (session.Value.ExpiryDate < now) toRemove.Enqueue(session.Key);
                 }
@@ -77,7 +77,7 @@ namespace GamestatsBase
         /// <param name="pid">Gamespy player ID</param>
         /// <param name="url">URL where the desired session began</param>
         /// <returns>The found session or null if none was found</returns>
-        public GamestatsSession FindSession(int pid, String url)
+        public GamestatsSession FindSession(int pid, string url)
         {
             // todo: keep a hash table of pids that maps them onto session objects
             GamestatsSession result = null;
