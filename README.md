@@ -1,4 +1,4 @@
-#GamestatsBase
+# GamestatsBase
 
 This is a library to assist with implementing custom HTTP Gamestats servers as
 used by some games formerly hosted by the GameSpy network.
@@ -9,7 +9,7 @@ always hold. If this library doesn't support a particular game's usage, please
 send a pull request or open an issue. Please send packet captures with any pull
 requests or new issues so I can verify your fix.
 
-##Usage
+## Usage
 
 In general, you'll want to perform URL rewriting in your global.asax handler to
 forward the game's .asp requests to the .ashx file where you implement your
@@ -20,10 +20,10 @@ contained within the game binary and helping you find them is outside the scope
 of this project.)
 
 Please see the included (albeit incomplete) Tetris DS example and the more
-robust [Pokémon Classic Framework](https://github.com/mm201/pkmnFoundations)
+robust [PokÃ©mon Classic Framework](https://github.com/mm201/pkmnFoundations)
 project for examples of this library in use.
 
-##Note
+## Note
 
 This is still a work in progress and I make no promises that there won't be
 breaking changes in the future.
