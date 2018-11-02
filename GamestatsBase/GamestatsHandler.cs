@@ -27,22 +27,22 @@ namespace GamestatsBase
             string salt = initString.Substring(0, 20);
             uint rngMul = UInt32.Parse(initString.Substring(20, 8), NumberStyles.AllowHexSpecifier);
             uint rngAdd = UInt32.Parse(initString.Substring(28, 8), NumberStyles.AllowHexSpecifier);
-            uint rngMask = UInt32.Parse(initString.Substring(36, 8), NumberStyles.AllowHexSpecifier);
+            uint rngMod = UInt32.Parse(initString.Substring(36, 8), NumberStyles.AllowHexSpecifier);
             uint hashMask = UInt32.Parse(initString.Substring(44, 8), NumberStyles.AllowHexSpecifier);
             string gameId = initString.Substring(52);
 
-            Initialize(salt, rngMul, rngAdd, rngMask, hashMask, gameId, reqVersion, respVersion, encryptedRequest, requireSession);
+            Initialize(salt, rngMul, rngAdd, rngMod, hashMask, gameId, reqVersion, respVersion, encryptedRequest, requireSession);
         }
 
-        public GamestatsHandler(string salt, uint rngMul, uint rngAdd, uint rngMask, 
+        public GamestatsHandler(string salt, uint rngMul, uint rngAdd, uint rngMod, 
             uint hashMask,
             string gameId, GamestatsRequestVersions reqVersion, GamestatsResponseVersions respVersion,
             bool encryptedRequest = true, bool requireSession = true)
         {
-            Initialize(salt, rngMul, rngAdd, rngMask, hashMask, gameId, reqVersion, respVersion, encryptedRequest, requireSession);
+            Initialize(salt, rngMul, rngAdd, rngMod, hashMask, gameId, reqVersion, respVersion, encryptedRequest, requireSession);
         }
 
-        private void Initialize(string salt, uint rngMul, uint rngAdd, uint rngMask, 
+        private void Initialize(string salt, uint rngMul, uint rngAdd, uint rngMod, 
             uint hashMask,
             string gameId, GamestatsRequestVersions reqVersion, GamestatsResponseVersions respVersion,
             bool encryptedRequest, bool requireSession)
@@ -51,7 +51,7 @@ namespace GamestatsBase
             Salt = salt;
             RngMul = rngMul;
             RngAdd = rngAdd;
-            RngMask = rngMask;
+            RngMod = rngMod;
             HashMask = hashMask;
             GameId = gameId;
             RequestVersion = reqVersion;
@@ -63,7 +63,7 @@ namespace GamestatsBase
         public string Salt { get; protected set; }
         public uint RngMul { get; protected set; }
         public uint RngAdd { get; protected set; }
-        public uint RngMask { get; protected set; }
+        public uint RngMod { get; protected set; }
         public uint HashMask { get; protected set; }
         public string GameId { get; protected set; }
         public GamestatsRequestVersions RequestVersion { get; protected set; }
@@ -300,7 +300,7 @@ namespace GamestatsBase
 
             byte[] data3;
             if (EncryptedRequest)
-                data3 = DecryptMain(data2, checksum | (checksum << 16));
+                data3 = DecryptMain(data2, (checksum & 0xffff) | (checksum << 16));
             else
             {
                 data3 = new byte[data2.Length - 4];
@@ -328,14 +328,14 @@ namespace GamestatsBase
             return data3;
         }
 
-        private static int DecryptRNG(int prev, uint mul, uint add, uint mask)
+        private static int DecryptRNG(int prev, uint mul, uint add, uint mod)
         {
-            return (prev * (int)mul + (int)add) & ~(int)mask;
+            return (int)(((uint)prev * mul + add) % mod);
         }
 
         private int DecryptRNG(int prev)
         {
-            return DecryptRNG(prev, RngMul, RngAdd, RngMask);
+            return DecryptRNG(prev, RngMul, RngAdd, RngMod);
         }
 
         public static byte[] FromUrlSafeBase64String(string data)
