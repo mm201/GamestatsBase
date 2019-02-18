@@ -2,7 +2,6 @@
 [Tt]humbs.db
 *.suo
 *.csproj.user
-*.pubxml
 *.pubxml.user
 [Dd]ebug/
 [Rr]elease/
@@ -11,3 +10,4 @@
 .DS_Store
 ._.DS_Store
 ._*
+.vs/
