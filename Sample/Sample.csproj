@@ -20,6 +20,8 @@
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
     <TargetFrameworkProfile />
+    <Use64BitIISExpress />
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -60,7 +62,10 @@
     <Content Include="Sessions.aspx" />
     <Content Include="tetrisds\store.ashx" />
     <Content Include="dummy.ashx" />
-    <None Include="Properties\PublishProfiles\pkmnclassic.net.pubxml" />
+    <Content Include="pokedungeonds\web\common\setProfile.ashx" />
+    <Content Include="pokedungeonds\web\rescue\rescueList.ashx" />
+    <Content Include="pokedungeonds\web\rescue\rescueExist.ashx" />
+    <None Include="Properties\PublishProfiles\Public.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -78,6 +83,15 @@
     </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="pokedungeonds\web\common\setProfile.ashx.cs">
+      <DependentUpon>setProfile.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="pokedungeonds\web\rescue\rescueExist.ashx.cs">
+      <DependentUpon>rescueExist.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="pokedungeonds\web\rescue\rescueList.ashx.cs">
+      <DependentUpon>rescueList.ashx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sessions.aspx.cs">
@@ -111,7 +125,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>True</UseIIS>
+          <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>54610</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
