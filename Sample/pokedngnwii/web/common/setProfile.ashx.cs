@@ -5,15 +5,15 @@ using System.IO;
 using System.Linq;
 using System.Web;
 
-namespace Sample.pokedungeonds.web.common
+namespace Sample.pokedngnwii.web.common
 {
     /// <summary>
     /// Summary description for setProfile
     /// </summary>
     public class setProfile : GamestatsHandler
     {
-        public setProfile() : base("TXqjDDOLhPySKSztgBHY", 114069, 32153, 512, 1631340900, "pokedungeonds", 
-            GamestatsRequestVersions.Version2, GamestatsResponseVersions.Version1)
+        public setProfile() : base("zjzrhOVXZKLHNspYpGoR0001c7850000620b0000000820556356pokedngnwii",
+            GamestatsRequestVersions.Version2, GamestatsResponseVersions.Version2)
         {
 
         }
@@ -22,7 +22,7 @@ namespace Sample.pokedungeonds.web.common
         {
             response.Write(new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 },
                 0, 8);
-            
+
         }
     }
 }

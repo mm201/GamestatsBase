@@ -65,6 +65,15 @@
     <Content Include="pokedungeonds\web\common\setProfile.ashx" />
     <Content Include="pokedungeonds\web\rescue\rescueList.ashx" />
     <Content Include="pokedungeonds\web\rescue\rescueExist.ashx" />
+    <Content Include="pokedngnwii\web\common\setProfile.ashx" />
+    <Content Include="pokedngnwii\web\rescue\rescueComplete.ashx" />
+    <Content Include="pokedngnwii\web\rescue\rescueExist.ashx" />
+    <Content Include="pokedngnwii\web\rescue\rescueList.ashx" />
+    <Content Include="pokedngnwii\web\rescue\rescueEntry.ashx" />
+    <Content Include="pokedngnwii\web\rescue\rescueReceive.ashx" />
+    <Content Include="pokedngnwii\web\rescue\rescueCheck.ashx" />
+    <Content Include="pokedngnwii\web\rescue\rescueThanks.ashx" />
+    <Content Include="pokedngnwii\web\rescue\rescueRegist.ashx" />
     <None Include="Properties\PublishProfiles\Public.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -83,6 +92,33 @@
     </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="pokedngnwii\web\common\setProfile.ashx.cs">
+      <DependentUpon>setProfile.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="pokedngnwii\web\rescue\rescueCheck.ashx.cs">
+      <DependentUpon>rescueCheck.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="pokedngnwii\web\rescue\rescueEntry.ashx.cs">
+      <DependentUpon>rescueEntry.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="pokedngnwii\web\rescue\rescueExist.ashx.cs">
+      <DependentUpon>rescueExist.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="pokedngnwii\web\rescue\rescueComplete.ashx.cs">
+      <DependentUpon>rescueComplete.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="pokedngnwii\web\rescue\rescueList.ashx.cs">
+      <DependentUpon>rescueList.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="pokedngnwii\web\rescue\rescueReceive.ashx.cs">
+      <DependentUpon>rescueReceive.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="pokedngnwii\web\rescue\rescueRegist.ashx.cs">
+      <DependentUpon>rescueRegist.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="pokedngnwii\web\rescue\rescueThanks.ashx.cs">
+      <DependentUpon>rescueThanks.ashx</DependentUpon>
     </Compile>
     <Compile Include="pokedungeonds\web\common\setProfile.ashx.cs">
       <DependentUpon>setProfile.ashx</DependentUpon>

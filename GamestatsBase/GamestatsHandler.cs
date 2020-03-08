@@ -392,7 +392,7 @@ namespace GamestatsBase
         /// </summary>
         Version1,
         /// <summary>
-        /// Response contains a salted hash at the end, in hex coded ASCII.
+        /// Response contains a 40-byte salted hash at the end, in hex coded ASCII.
         /// </summary>
         Version2
     }
