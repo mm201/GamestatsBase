@@ -28,8 +28,20 @@ namespace Sample.pokedngnwii.web.rescue
             // 0010: 000000180000000c 0000000600000000
             // 0020: 0000002000000001
 
+            // request: a bunch of 32-bit BE ints
+            // pid, 0, 24, 12, 6, 0, 2, 1
+            // response:
+            // at offset 0x2c, we see the request player name (? pink text)
+            // in unicode katakana: pokemonzu
+
+            // this dummy response will tell the game there is no Rescue Mail.
+            response.Write(new byte[]
+            {
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            }, 0, 8);
+
+            /*
             response.Write(new byte[] {
-                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01,
                 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00,
                 0x00, 0x01, 0xb1, 0x4a, 0xa9, 0x9f, 0x50, 0x07,
                 0x3e, 0x86, 0xf3, 0x55, 0x00, 0x00, 0x00, 0x00,
@@ -56,7 +68,8 @@ namespace Sample.pokedngnwii.web.rescue
                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                 0x00, 0x00, 0x00, 0x00 },
-                0, 212);
+                0, 204);
+            */
         }
     }
 }

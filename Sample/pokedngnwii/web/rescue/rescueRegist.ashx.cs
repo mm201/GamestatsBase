@@ -36,6 +36,12 @@ namespace Sample.pokedngnwii.web.rescue
             // 00a0: 0000000000000000 0000000000000000
             // 00b0: 00000000
 
+            // request 0000-0007: gamestats boilerplate, pid and blob length
+            // 0008-000b: pid in big endian
+
+            // request is a rescue mail payload, response is the ID it has been uploaded with in big endian
+            // the below response corresponds to 0000-0011-0926
+
             response.Write(new byte[] {
                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                 0x00, 0x01, 0xb1, 0x4e },
