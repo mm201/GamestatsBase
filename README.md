@@ -20,7 +20,7 @@ contained within the game binary and helping you find them is outside the scope
 of this project.)
 
 Please see the included (albeit incomplete) Tetris DS example and the more
-robust [Pokémon Classic Framework](https://github.com/mm201/pkmnFoundations)
+robust [Poké Classic Framework](https://github.com/mm201/pkmn-classic-framework)
 project for examples of this library in use.
 
 ## Note
