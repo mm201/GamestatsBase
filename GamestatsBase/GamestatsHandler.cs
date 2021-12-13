@@ -224,11 +224,7 @@ namespace GamestatsBase
                 }
                 catch (Exception ex)
                 {
-#if DEBUG
                     ShowError(context, 500, ex.ToString());
-#else
-                    ShowError(context, 500);
-#endif
                     return;
                 }
 
@@ -250,16 +246,19 @@ namespace GamestatsBase
             }
         }
 
-        // todo: keep the context on a field instead of passing it here
-        public void ShowError(HttpContext context, int responseCode)
+        public static void ShowError(HttpContext context, int responseCode)
         {
             ShowError(context, responseCode, GamestatsException.defaultMessage(responseCode));
         }
 
-        public void ShowError(HttpContext context, int responseCode, string message)
+        public static void ShowError(HttpContext context, int responseCode, string message)
         {
             context.Response.StatusCode = responseCode;
+#if DEBUG
+            context.Response.Write(message);
+#else
             context.Response.Write(GamestatsException.defaultMessage(responseCode));
+#endif
         }
 
         public virtual bool IsReusable
